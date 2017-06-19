@@ -1,4 +1,4 @@
-studycom.factory('Auth', ['$http', '$localStorage', function ($http, $localStorage, $q) {
+studycom.factory('Auth', ['$http', '$localStorage', '$resource', function ($http, $localStorage, $resource) {
     function urlBase64Decode(str) {
         var output = str.replace('-', '+').replace('_', '/');
         switch (output.length % 4) {
@@ -30,10 +30,8 @@ studycom.factory('Auth', ['$http', '$localStorage', function ($http, $localStora
 
     function getUser() {
         var tokenClaim = getClaimsFromToken();
-        var userPromise = $http.get('http://localhost/Studycom/public/api/user/'+tokenClaim.sub).then(function (response) {
-            return response.data;
-        });
-        return userPromise;
+        var resource = $resource('http://localhost/Studycom/public/api/user/'+tokenClaim.sub).get();
+        return resource;
     }
 
     var user = getUser();
