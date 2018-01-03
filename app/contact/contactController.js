@@ -1,11 +1,11 @@
 angular.module('myApp.contactController', ['ngRoute'])
 
-    .controller('contactController', function ($scope, $mdDialog, $http,$location, $rootScope, Auth, contact) {
+    .controller('contactController', function ($scope, $mdDialog, $http, $location, $rootScope, Auth, contact) {
 
         if (!Auth.isConnected()) {
             window.location = 'http://localhost/StudycomClient/app/#/';
         }
-        Auth.user().then(function(response) {
+        Auth.user().then(function (response) {
             $scope.user = response;
             $scope.message = '';
             $scope.getContact();
@@ -26,7 +26,7 @@ angular.module('myApp.contactController', ['ngRoute'])
         });
 
         $scope.getContact = function () {
-            $http.get('http://localhost/Studycom/public/api/contact/'+contact.id+'/get').then(function(response) {
+            $http.get('http://localhost/Studycom/public/api/contact/' + contact.id + '/get').then(function (response) {
                 $scope.contact = response.data[0];
                 $scope.getTopic();
             });
@@ -34,22 +34,20 @@ angular.module('myApp.contactController', ['ngRoute'])
 
         $scope.getTopic = function () {
 
-            $http.get('http://localhost/Studycom/public/api/user/'+$scope.user.id+'/contact/topic/' + $scope.contact.id +'/get').then(function(response) {
+            $http.get('http://localhost/Studycom/public/api/user/' + $scope.user.id + '/contact/topic/' + $scope.contact.id + '/get').then(function (response) {
                 $scope.topic = response.data[0];
                 $scope.getTopicMessages($scope.topic.id);
             });
         };
 
         $scope.getTopicMessages = function (idTopic) {
-            $http.get('http://localhost/Studycom/public/api/topic/'+idTopic+'/posts').
-            then(function (response) {
+            $http.get('http://localhost/Studycom/public/api/topic/' + idTopic + '/posts').then(function (response) {
                 $scope.messages = response.data;
             });
         };
 
         $scope.deleteUser = function () {
-            $http.get('http://localhost/Studycom/public/api/user/'+$scope.user.id+'/contact/'+$scope.contact.id+'/delete').
-            then(function (response) {
+            $http.get('http://localhost/Studycom/public/api/user/' + $scope.user.id + '/contact/' + $scope.contact.id + '/delete').then(function (response) {
                 window.location = 'http://localhost/StudycomClient/app/#/home';
 
             });
@@ -57,12 +55,12 @@ angular.module('myApp.contactController', ['ngRoute'])
 
         $scope.addMessage = function () {
 
-            var data = {'idAuthor': $scope.user.id,
+            var data = {
+                'idAuthor': $scope.user.id,
                 'idTopic': $scope.topic.id,
                 'text': $scope.message
             };
-            $http.post('http://localhost/Studycom/public/api/topic/sendMessage', data).
-            then(function (response) {
+            $http.post('http://localhost/Studycom/public/api/topic/sendMessage', data).then(function (response) {
                 $scope.socket.emit('newMessage', response.data);
             });
             $scope.message = '';
@@ -103,9 +101,9 @@ angular.module('myApp.contactController', ['ngRoute'])
 
             });
 
-            function userProfileModalController($scope, $mdDialog, Auth,idAuthor) {
+            function userProfileModalController($scope, $mdDialog, Auth, idAuthor) {
 
-                Auth.user().then(function(response) {
+                Auth.user().then(function (response) {
                     $scope.user = response;
                     $scope.getAuthor();
                     $scope.getContacts();
@@ -116,37 +114,37 @@ angular.module('myApp.contactController', ['ngRoute'])
                 });
 
                 $scope.getAuthor = function () {
-                    $http.get('http://localhost/Studycom/public/api/author/'+idAuthor+'/get')
-                        .then(function(response) {
+                    $http.get('http://localhost/Studycom/public/api/author/' + idAuthor + '/get')
+                        .then(function (response) {
 
                             $scope.author = response.data[0];
                         })
                 };
 
                 $scope.getContacts = function () {
-                    $http.get('http://localhost/Studycom/public/api/user/'+$scope.user.id+'/contacts/get')
-                        .then(function(response) {
+                    $http.get('http://localhost/Studycom/public/api/user/' + $scope.user.id + '/contacts/get')
+                        .then(function (response) {
                             $scope.contacts = response.data;
                         })
                 };
 
                 $scope.getNumberOfContacts = function () {
-                    $http.get('http://localhost/Studycom/public/api/user/'+idAuthor+'/number/contacts')
-                        .then(function(response) {
+                    $http.get('http://localhost/Studycom/public/api/user/' + idAuthor + '/number/contacts')
+                        .then(function (response) {
                             $scope.numberOfContacts = response.data;
                         })
                 };
 
                 $scope.getMutualContacts = function () {
-                    $http.get('http://localhost/Studycom/public/api/user/'+$scope.user.id+'/user2/'+idAuthor+'/mutual/contacts')
-                        .then(function(response) {
+                    $http.get('http://localhost/Studycom/public/api/user/' + $scope.user.id + '/user2/' + idAuthor + '/mutual/contacts')
+                        .then(function (response) {
                             $scope.mutualContacts = response.data;
                         })
                 };
 
                 $scope.getMutualTopics = function () {
-                    $http.get('http://localhost/Studycom/public/api/user/'+$scope.user.id+'/user2/'+idAuthor+'/mutual/topics')
-                        .then(function(response) {
+                    $http.get('http://localhost/Studycom/public/api/user/' + $scope.user.id + '/user2/' + idAuthor + '/mutual/topics')
+                        .then(function (response) {
                             $scope.mutualTopics = response.data;
                         })
                 };
@@ -169,8 +167,8 @@ angular.module('myApp.contactController', ['ngRoute'])
                         email: $scope.author.email
                     };
 
-                    $http.post('http://localhost/Studycom/public/api/user/'+ $scope.user.id+'/contact/request', formData)
-                        .then(function(response) {
+                    $http.post('http://localhost/Studycom/public/api/user/' + $scope.user.id + '/contact/request', formData)
+                        .then(function (response) {
                             $mdDialog.hide();
                         })
                 }
@@ -187,7 +185,7 @@ angular.module('myApp.contactController', ['ngRoute'])
                     i = $scope.messages.length;
                 }
             }
-            if(!messageExist) {
+            if (!messageExist) {
                 $scope.messages.push(message);
                 $scope.$apply();
             }
